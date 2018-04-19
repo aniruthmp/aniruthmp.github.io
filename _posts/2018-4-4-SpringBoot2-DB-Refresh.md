@@ -3,9 +3,7 @@ layout: post
 title: SpringBoot 2.0 - DB credentials update without restarting the App!
 published: true
 ---
-
 ## Wait what? Did I read the title properly?
-
 Oh boy. Spring team is kicking everyone's _@55_ by re-defining software development as we know it. I read our own [Josh Long](http://joshlong.com/) weekly blog on [spring.io/blog](https://spring.io/blog/) and this particularly caught my attention.
 
 > I haven’t tried this out yet, but it looks like you can now add @RefreshScope to a javax.sql.DataSource @Bean definition and it’ll automatically be re-configured? If so, that’s super cool!
@@ -59,6 +57,4 @@ Note in the output above that **"spring.datasource.password"** got refreshed. Al
 2018-04-18 21:27:29.660  INFO 15521 --- [nio-8080-exec-3] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
 2018-04-18 21:27:29.669  INFO 15521 --- [nio-8080-exec-3] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
 ```
-1. Now try to call the _DELETE_ or _GET_ and you can see the output. 
-
-
+1. Now try to call the _DELETE_ or _GET_ and you can see the output.
