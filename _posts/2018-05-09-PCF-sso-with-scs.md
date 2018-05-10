@@ -251,3 +251,46 @@ In both the above cases, we need to generate a token through the application, em
             return uiResponse;
         }
     ```
+1. Of-course the above client could also be done in a simpler way using _**OAuth2RestTemplate**_. Create the required bean
+
+    ```java
+    @Bean
+    public DefaultOAuth2ClientContext oauth2ClientContext() {
+        return new DefaultOAuth2ClientContext(new DefaultAccessTokenRequest());
+    }
+
+    @Autowired
+    OAuth2ClientConfig auth2ClientConfig;
+
+    @Bean
+    public ClientCredentialsResourceDetails client() {
+        ClientCredentialsResourceDetails resourceDetails = new ClientCredentialsResourceDetails();
+        resourceDetails.setClientId(auth2ClientConfig.getClientId());
+        resourceDetails.setClientSecret(auth2ClientConfig.getClientSecret());
+        resourceDetails.setAccessTokenUri(auth2ClientConfig.getAccessTokenUri());
+        resourceDetails.setGrantType(auth2ClientConfig.getGrantType());
+        return resourceDetails;
+    }
+
+    @Bean
+    public OAuth2RestTemplate oAuth2RestTemplate() {
+        return new OAuth2RestTemplate(client(), oauth2ClientContext());
+    }
+    ```
+1. Use the above _**OAuth2RestTemplate**_ in the service class. In this way, the template will automatically generate the accessToken _(if not already present)_
+
+    ```java
+    @Autowired
+    private OAuth2RestTemplate oAuth2RestTemplate;
+
+    public UIResponse findCustomerDetailsByNumberUsingOAuth(int customerNumber) {
+        ...
+        ResponseEntity<Customer> customerResponseEntity = oAuth2RestTemplate.getForEntity(
+                URL_CUSTOMER_SERVICE, Customer.class, customerNumber);
+        ...
+        ResponseEntity<List<Account>> accountResponseEntity = oAuth2RestTemplate.exchange(
+                URL_ACCOUNT_SERVICE, HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<Account>>() {}, customerNumber);
+        ...
+    }
+    ```
