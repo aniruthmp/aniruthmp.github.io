@@ -15,12 +15,12 @@ published: false
 - **Resource Server:** The server that hosts protected resources and accepts and responds to protected resource requests using access tokens. Applications access the server through APIs.
 
 ## [Pre-requisite](#pre-requisite)
-1. First, create the _**Single Sing-On**_ service from the Marketplace ![SCREENSHOT](./docs/marketplace.png). Go with the default options and create the service
-1. From the `cf cli` you can grab the URL for this newly created service as follows ![SCREENSHOT](./docs/sso-service.png)
+1. First, create the _**Single Sing-On**_ service from the Marketplace ![Marketplace Screenshot](/images/pcf-sso/marketplace.png). Go with the default options and create the service
+1. From the `cf cli` you can grab the URL for this newly created service as follows ![SCREENSHOT](/images/pcf-sso/sso-service.png)
 1. When you come in for the first time to the above URL, there will be no _Apps_ or _Resources_
-1. Now, let's create _resources_ ![SCREENSHOT](./docs/resources.png)
-1. After resources, let's create a _**Service-to-Service App**_. Ensure to select the _pivotal_ resources (or the resource created in the above step 4.) ![SCREENSHOT](./docs/sso-app-1.png)
-**Note:** Download the `App ID` and `App Secret` locally as you can copy it only the first time. Next time, you will be able to re-generate new `App Secret`. Copy the _**OAuth Token URL**_ as well. ![SCREENSHOT](./docs/sso-app-2.png)
+1. Now, let's create _resources_ ![SCREENSHOT](/images/pcf-sso/resources.png)
+1. After resources, let's create a _**Service-to-Service App**_. Ensure to select the _pivotal_ resources (or the resource created in the above step 4.) ![SCREENSHOT](/images/pcf-sso/sso-app-1.png)
+**Note:** Download the `App ID` and `App Secret` locally as you can copy it only the first time. Next time, you will be able to re-generate new `App Secret`. Copy the _**OAuth Token URL**_ as well. ![SCREENSHOT](/images/pcf-sso/sso-app-2.png)
 
 
 ## **Scenario 1:** Not using SSO Tile in PCF
@@ -99,8 +99,8 @@ published: false
     ```bash
     curl -s -X POST https://pivot-aparthasarathy.login.run.pcfbeta.io/oauth/token -H "Content-Type: application/x-www-form-urlencoded" -d "client_id=f17dfc29-7c0f-4e50-af2c-06a21b670fd0&client_secret=7c7aafa6-18ff-4d37-9e20-3a7dd34d975a&grant_type=client_credentials" | jq -r .access_token
     ```
-1. If you don't have [jq](https://stedolan.github.io/jq/), you can use [Postman](https://www.getpostman.com/) ![SCREENSHOT](./docs/postman-token.png)
-1. Pass this _access_token_ in the Header when invoking `/customers` API ![SCREENSHOT](./docs/postman-customers.png)
+1. If you don't have [jq](https://stedolan.github.io/jq/), you can use [Postman](https://www.getpostman.com/) ![SCREENSHOT](/images/pcf-sso/postman-token.png)
+1. Pass this _access_token_ in the Header when invoking `/customers` API ![SCREENSHOT](/images/pcf-sso/postman-customers.png)
 1. If you pass a token without _pivotal_ resource id, you would receive a _**403 Forbidden**_ with a body
 
     ```json
@@ -133,7 +133,7 @@ published: false
         SSO_ACCESS_TOKEN_LIFETIME: 30
     ```
 1. In our _java_ code below, we make use of _EnableResourceServer_. Please refer `customer-service` java code above for this.
-1. Once we generate the token (refer to `customer-service` section above), we could invoke any REST API and validate the same. ![SCREENSHOT](./docs/postman-accounts.png)
+1. Once we generate the token (refer to `customer-service` section above), we could invoke any REST API and validate the same. ![SCREENSHOT](/images/pcf-sso/postman-accounts.png)
 
 ## Scenario 3: 3rd Party micro-service to call above secured micro-services
 Let's say we have another micro-service [bff-service](https://samnewman.io/patterns/architectural/bff/) which calls both `account-service` and `customer-service`. To make it even more interesting, we could have 2 cases
