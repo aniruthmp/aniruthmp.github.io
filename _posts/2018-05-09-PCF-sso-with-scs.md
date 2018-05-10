@@ -4,8 +4,7 @@ title: SpringBoot Microservices using SCS and PCF SSO Tile
 published: true
 ---
 
-## This demo projects shows the following functions
-
+## This demo projects shows usage of PCF Tiles SCS and Single Sing-On
  - How to use [Spring Cloud Services](http://docs.pivotal.io/spring-cloud-services/1-5/common/index.html)?
  - How to use [Single Sing-On](http://docs.pivotal.io/p-identity/1-5/) tile in PCF?
  - How to use [Service-to-Service App](http://docs.pivotal.io/p-identity/1-5/configure-apps/service-to-service-app.html)?
