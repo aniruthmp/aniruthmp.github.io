@@ -1,7 +1,8 @@
 ---
-published: false
+layout: post
+title: SpringBoot Microservices using SCS and PCF SSO Tile
+published: true
 ---
-# SpringBoot Microservices using SCS and PCF SSO Tile
 
 ## This demo projects shows the following functions
 
