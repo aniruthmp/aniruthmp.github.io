@@ -1,6 +1,6 @@
 ---
 layout: post
-title: SpringBoot Microservices using PCF Tiles SCS and Single Sing-On
+title: SpringBoot Microservices using PCF Tiles SCS and Single Sign-On
 published: true
 ---
 
