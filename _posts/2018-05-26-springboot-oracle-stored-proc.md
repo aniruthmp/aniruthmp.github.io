@@ -1,7 +1,8 @@
 ---
-published: false
+layout: post
+title: SpringBoot Demo Project for executing Oracle Stored Procedure
+published: true
 ---
-## SpringBoot Demo Project for executing Oracle Stored Procedure
 
 ### Pre-requisite
 - This requires Oracle DB. Follow this [article](https://medium.com/@brunoborges/setting-up-database-servers-for-development-on-mac-os-x-using-docker-b7f2fad056f3) to  spin an Oracle docker image. Alternatively, you can use the [docker-compose.yml](https://github.com/aniruthmp/spring-oracle-stored-proc/blob/master/src/main/docker/docker-compose.yml) 
