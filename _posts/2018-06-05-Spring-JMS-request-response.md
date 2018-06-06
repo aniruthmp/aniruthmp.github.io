@@ -1,7 +1,8 @@
 ---
-published: false
+layout: post
+title: How to implement JMS ReplyTo using SpringBoot
+published: true
 ---
-## How to implement JMS ReplyTo using SpringBoot
 
 Request-Response is a [message-exchange-pattern](https://en.wikipedia.org/wiki/Messaging_pattern). In some cases, a message producer may want the consumers to reply to a message. The JMSReplyTo header indicates which destination, if any, a JMS consumer should reply to. The JMSReplyTo header is set explicitly by the JMS client; its contents will be a javax.jms.Destination object (either Topic or Queue).
 
