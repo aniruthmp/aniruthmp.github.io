@@ -96,8 +96,135 @@ For demo purpose, I used [ActiveMQ](http://activemq.apache.org/). However, you c
             return jmsMessagingTemplate.convertSendAndReceive(new ActiveMQQueue(ORDER_QUEUE),
                     objectMessage, Shipment.class); //this operation seems to be blocking + sync
         }
-
-
     }
     ```
-1. Note in the above code that, [JmsMessagingTemplate](https://docs.spring.io/spring-framework/docs/4.3.x/javadoc-api/org/springframework/jms/core/JmsMessagingTemplate.html) is used instead of _JmsTemplate_ because, we are interested in the method _convertSendAndReceive_
+1. Note in the above code that, [JmsMessagingTemplate](https://docs.spring.io/spring-framework/docs/4.3.x/javadoc-api/org/springframework/jms/core/JmsMessagingTemplate.html) is used instead of _JmsTemplate_ because, we are interested in the method _convertSendAndReceive_. As seen in the method signature, it waits to receive the _Shipment_ object from the consumer.
+1. Next, we can see the **Receiver**
+
+	```java
+    @Component
+    public class Receiver implements SessionAwareMessageListener<Message> {
+
+        @Override
+        @JmsListener(destination = ORDER_QUEUE)
+        public void onMessage(Message message, Session session) throws JMSException {
+            Order order = (Order) ((ActiveMQObjectMessage) message).getObject();
+            Shipment shipment = new Shipment(order.getId(), UUID.randomUUID().toString());
+
+            // done handling the request, now create a response message
+            final ObjectMessage responseMessage = new ActiveMQObjectMessage();
+            responseMessage.setJMSCorrelationID(message.getJMSCorrelationID());
+            responseMessage.setObject(shipment);
+
+            // Message sent back to the replyTo address of the income message.
+            final MessageProducer producer = session.createProducer(message.getJMSReplyTo());
+            producer.send(responseMessage);
+        }
+    }
+	```
+1. Using the _javax.jms.Session_ the _javax.jms.MessageProducer_ is created and used to send the reply message to the JMSReplyTo queue. In real life, this receiver could be a different application altogether. 
+
+
+### Using Spring Integration
+1. First, we include the required dependencies in addition to the above dependencies
+
+	```xml
+    <dependency>
+      <groupId>org.springframework.integration</groupId>
+      <artifactId>spring-integration-jms</artifactId>
+    </dependency>
+	```
+1. Using the default **spring.activemq.** properties to configure the application with the ActiveMQ. However, you can do this inside a **@Configuration** class as well.
+
+	```yml
+    spring:
+      activemq:
+        broker-url: tcp://localhost:61616
+        non-blocking-redelivery: true
+        packages:
+          trust-all: true    
+    ```
+1. Note in the above configuration _spring.activemq.packages.trust-all_ can be changed to _spring.activemq.packages.trusted_ with the appropriate packages.
+1. Next we create the required Beans for the Spring Integration.
+
+	```java
+    @EnableIntegration
+    @IntegrationComponentScan
+    @Configuration
+    public class ActiveMQConfig {
+
+        public static final String ORDER_QUEUE = "order-queue";
+        public static final String ORDER_REPLY_2_QUEUE = "order-reply-2-queue";
+
+        @Bean
+        public MessageConverter messageConverter() {
+            MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+            converter.setTargetType(MessageType.TEXT);
+            converter.setTypeIdPropertyName("_type");
+            return converter;
+        }
+
+        @Bean
+        public MessageChannel requests() {
+            return new DirectChannel();
+        }
+
+        @Bean
+        @ServiceActivator(inputChannel = "requests")
+        public JmsOutboundGateway jmsGateway(ActiveMQConnectionFactory activeMQConnectionFactory) {
+            JmsOutboundGateway gateway = new JmsOutboundGateway();
+            gateway.setConnectionFactory(activeMQConnectionFactory);
+            gateway.setRequestDestinationName(ORDER_QUEUE);
+            gateway.setReplyDestinationName(ORDER_REPLY_2_QUEUE);
+            gateway.setCorrelationKey("JMSCorrelationID");
+            gateway.setSendTimeout(100L);
+            gateway.setReceiveTimeout(100L);
+            return gateway;
+        }
+
+        @Autowired
+        Receiver receiver;
+
+        @Bean
+        public DefaultMessageListenerContainer responder(ActiveMQConnectionFactory activeMQConnectionFactory) {
+            DefaultMessageListenerContainer container = new DefaultMessageListenerContainer();
+            container.setConnectionFactory(activeMQConnectionFactory);
+            container.setDestinationName(ORDER_QUEUE);
+            MessageListenerAdapter adapter = new MessageListenerAdapter(new Object() {
+
+                @SuppressWarnings("unused")
+                public Shipment handleMessage(Order order) {
+                    return receiver.receiveMessage(order);
+                }
+
+            });
+            container.setMessageListener(adapter);
+            return container;
+        }
+    }
+	```
+1. Next, we will configure the **MessagingGateway**
+
+	```java
+    @MessagingGateway(defaultRequestChannel = "requests")
+    public interface ClientGateway {
+        Shipment sendAndReceive(Order order);
+    }
+    ```
+1. We then _Autowire_ this gateway in our _Component_ class when we want to send and receive the message. A sample is shown below.
+
+	```java
+    @Slf4j
+    @Component
+    public class Receiver {
+        public Shipment receiveMessage(@Payload Order order) {
+            Shipment shipment = new Shipment(order.getId(), UUID.randomUUID().toString());
+            return shipment;
+        }
+    }
+	```
+1. Next we configure the _Componen_ to process the _Order_ message. After successful execution, this component will send the _Shipment_ message to the JMSReplyTo queue. In real life, this receiver could be a different application altogether. 
+
+For those, who just want to clone the code, head out to [aniruthmp/jms](https://github.com/aniruthmp/jms.git)
+
+
