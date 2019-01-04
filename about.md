@@ -5,7 +5,7 @@ permalink: /about/
 published: true
 ---
 
-As a Solutions Architect at [Pivotal](www.pivotal.io) I am leading and helping customers in their Cloud Native Transformation (both from Application as well Platform perspective) so that they can always stay a step ahead of their competition. I am an extremely passionate Software Engineer by heart.
+As a Delivery Lead at [Pivotal](www.pivotal.io) he leads a group of exceptionally talented Solution Architects, who help the customers in their Cloud Native Transformation journey (both from Strategy as well as Application perspective).
 
 I love to play and spend time with my beloved boy named Boris ![](/images/boris.png)
 
